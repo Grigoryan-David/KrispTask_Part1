@@ -20,7 +20,7 @@ all orchestrated with Docker.
 
 ### 1. Clone the Repository:
 ```bash
-git clone https://github.com/yourusername/metrics-pipeline.git
+git clone https://github.com/Grigoryan-David/KrispTask.git
 cd krisp
 ```
 
