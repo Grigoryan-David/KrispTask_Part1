@@ -19,15 +19,15 @@ CREATE TABLE sessions (
 CREATE TABLE metrics (
     metric_id SERIAL PRIMARY KEY,
     session_id UUID REFERENCES sessions(session_id),
-    metric_type VARCHAR(50),
-    value NUMERIC,
+    metric_type VARCHAR(50),  -- Can store 'talked_time', 'microphone_used', 'speaker_used'
+    value NUMERIC,            -- Stores the actual metric value (e.g., duration, boolean)
     timestamp TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE voice_sentiment (
     sentiment_id SERIAL PRIMARY KEY,
     session_id UUID REFERENCES sessions(session_id),
-    sentiment_score NUMERIC,
+    sentiment_score NUMERIC,  -- Stores the sentiment score (e.g., a value between -1 and 1)
     timestamp TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -35,3 +35,4 @@ CREATE INDEX idx_session_id ON metrics(session_id);
 CREATE INDEX idx_user_id ON sessions(user_id);
 CREATE INDEX idx_timestamp_metrics ON metrics(timestamp);
 CREATE INDEX idx_timestamp_sentiment ON voice_sentiment(timestamp);
+

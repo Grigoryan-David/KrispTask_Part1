@@ -1,6 +1,6 @@
 import os
 import psycopg2
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock
 
 ENVIRONMENT = os.getenv('DATABASE_URL')
 
@@ -18,40 +18,65 @@ def get_database_connection():
 
 
 def insert_data_to_database(metrics):
-    conn, cursor = get_database_connection()
-    insert_query = """
-    INSERT INTO metrics (session_id, metric_type, value, timestamp)
-    VALUES (%s, %s, %s, %s)
-    """
-    cursor.executemany(insert_query, metrics)
-    if not isinstance(cursor, MagicMock):
-        conn.commit()
+    def insert_metrics(metrics):
+        conn, cursor = get_database_connection()
+        metric_query = """
+        INSERT INTO metrics (session_id, metric_type, value, timestamp)
+        VALUES (%s, %s, %s, %s)
+        """
+        sentiment_query = """
+        INSERT INTO voice_sentiment (session_id, sentiment_score, timestamp)
+        VALUES (%s, %s, %s)
+        """
 
-    cursor.close()
-    conn.close()
-    print('completed')
+        metric_data = []
+        sentiment_data = []
+        for data in metrics:
+            if data['metric_type'] == 'voice_sentiment':
+                sentiment_data.append((
+                    data['session_id'],
+                    data['value'],  # sentiment_score
+                    data['timestamp']
+                ))
+            else:
+                metric_data.append((
+                    data['session_id'],
+                    data['metric_type'],
+                    data['value'],
+                    data['timestamp']
+                ))
 
-
-def process_stream(data_stream):
-    metrics = [(m['session_id'], m['metric_type'], m['value'], m['timestamp']) for m in data_stream]
-    insert_data_to_database(metrics)
+        if metric_data:
+            cursor.executemany(metric_query, metric_data)
+        if sentiment_data:
+            cursor.executemany(sentiment_query, sentiment_data)
+        if not isinstance(cursor, MagicMock):
+            conn.commit()
+        cursor.close()
+        conn.close()
 
 
 # Example usage
-metrics_data = [
+data_stream = [
     {
-        'session_id': '123e4567-e89b-12d3-a456-426614174000',
+        'session_id': 'session1',
         'metric_type': 'talked_time',
         'value': 300,
         'timestamp': '2024-08-13T12:00:00Z'
     },
     {
-        'session_id': '123e4567-e89b-12d3-a456-426614174000',
+        'session_id': 'session1',
         'metric_type': 'microphone_used',
         'value': 1,
         'timestamp': '2024-08-13T12:05:00Z'
+    },
+    {
+        'session_id': 'session1',
+        'metric_type': 'voice_sentiment',
+        'value': 0.8,
+        'timestamp': '2024-08-13T12:10:00Z'
     }
 ]
+insert_data_to_database(data_stream)
 
-process_stream(metrics_data)
 
