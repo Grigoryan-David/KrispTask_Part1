@@ -21,7 +21,7 @@ def insert_data_to_database(metrics):
     conn, cursor = get_database_connection()
     insert_query = """
     INSERT INTO metrics (session_id, metric_type, value, timestamp)
-    VALUES (%s, %s, %s, %s, %s)
+    VALUES (%s, %s, %s, %s)
     """
     cursor.executemany(insert_query, metrics)
     if not isinstance(cursor, MagicMock):

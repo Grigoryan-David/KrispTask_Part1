@@ -1,6 +1,6 @@
-# Krisp Project Part 1
+# Krisp Project 
 
-## Overview
+## Part 1 Overview
 This project is a data ingestion pipeline that processes user metrics, 
 such as `talked_time`, `microphone_used`, `speaker_used`, and `voice_sentiment`. 
 The pipeline ingests this data into a PostgreSQL database using a Python application, 
@@ -16,6 +16,21 @@ all orchestrated with Docker.
 - Docker and Docker Compose installed on your machine.
 - Python 3.12.3.
 
+## Project Structure
+
+krisp/
+│
+├── app/
+│   ├── insert_data_to_database.py
+│   ├── requirements.txt
+│   └── Dockerfile
+│
+├── init_db.sql
+├── docker-compose.yml
+├── README.md
+
+
+
 ## Setup Instructions
 
 ### 1. Clone the Repository:
@@ -25,7 +40,7 @@ cd krisp
 ```
 
 ### 2. Build and Start the Containers:
-#### Ensure the tables were created successfully:
+#### Build and start the Docker containers using Docker Compose
 ```bash
 docker-compose up --build
 ```
@@ -41,6 +56,7 @@ docker exec -it krisp-db-1 psql -U metrics_user -d metrics_db
 ```
 
 ### 4. Verify the Setup
+#### Ensure the tables were created successfully:
 ```sql
 \dt
 \d metrics
